@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
 import heroBg from '@/assets/hero-bg.jpg';
 import aboutImage from '@/assets/about-image.jpg';
 import portfolio1 from '@/assets/portfolio-1.jpg';
@@ -127,16 +128,10 @@ const defaultData: SiteData = {
   },
 };
 
-const loadSavedData = (): SiteData => {
-  try {
-    const saved = localStorage.getItem('woodonwood-site-data');
-    if (saved) return JSON.parse(saved);
-  } catch {}
-  return defaultData;
-};
-
-export const useSiteStore = create<SiteStore>((set) => ({
-  data: loadSavedData(),
+export const useSiteStore = create<SiteStore>()(
+  persist(
+    (set) => ({
+      data: defaultData,
   updateHero: (hero) =>
     set((s) => ({ data: { ...s.data, hero: { ...s.data.hero, ...hero } } })),
   updateAbout: (about) =>
