@@ -1,5 +1,5 @@
-const CLOUD_NAME = 'YOUR_CLOUD_NAME';
-const UPLOAD_PRESET = 'YOUR_UPLOAD_PRESET';
+const CLOUD_NAME = 'dzk3ljdnh';
+const UPLOAD_PRESET = 'ml_default';
 
 export const uploadToCloudinary = async (file: File): Promise<string> => {
   const formData = new FormData();
