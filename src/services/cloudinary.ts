@@ -20,5 +20,5 @@ export const uploadToCloudinary = async (file: File): Promise<string> => {
 };
 
 export const isCloudinaryConfigured = (): boolean => {
-  return CLOUD_NAME !== 'YOUR_CLOUD_NAME' && UPLOAD_PRESET !== 'YOUR_UPLOAD_PRESET';
+  return CLOUD_NAME.length > 0 && UPLOAD_PRESET.length > 0;
 };
