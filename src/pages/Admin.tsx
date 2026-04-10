@@ -21,6 +21,17 @@ const tabs: { id: Tab; label: string; icon: React.ReactNode }[] = [
 
 const AdminPanel = () => {
   const [activeTab, setActiveTab] = useState<Tab>('hero');
+  const data = useSiteStore((s) => s.data);
+  const { toast } = useToast();
+
+  const handleSave = () => {
+    try {
+      localStorage.setItem('woodonwood-site-data', JSON.stringify(data));
+      toast({ title: 'Alterações guardadas com sucesso!' });
+    } catch {
+      toast({ title: 'Erro ao guardar', variant: 'destructive' });
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background flex">
