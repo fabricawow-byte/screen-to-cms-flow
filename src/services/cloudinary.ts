@@ -1,5 +1,5 @@
-const CLOUD_NAME = 'YOUR_CLOUD_NAME';
-const UPLOAD_PRESET = 'YOUR_UPLOAD_PRESET';
+const CLOUD_NAME = 'dzk3ljdnh';
+const UPLOAD_PRESET = 'ml_default';
 
 export const uploadToCloudinary = async (file: File): Promise<string> => {
   const formData = new FormData();
@@ -20,5 +20,5 @@ export const uploadToCloudinary = async (file: File): Promise<string> => {
 };
 
 export const isCloudinaryConfigured = (): boolean => {
-  return CLOUD_NAME !== 'YOUR_CLOUD_NAME' && UPLOAD_PRESET !== 'YOUR_UPLOAD_PRESET';
+  return CLOUD_NAME.length > 0 && UPLOAD_PRESET.length > 0;
 };
