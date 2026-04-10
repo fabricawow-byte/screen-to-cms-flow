@@ -62,6 +62,14 @@ const AdminPanel = () => {
             </button>
           ))}
         </nav>
+
+        <button
+          onClick={handleSave}
+          className="mt-auto flex items-center justify-center gap-2 px-4 py-2.5 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:opacity-90 transition-opacity"
+        >
+          <Save size={16} />
+          Salvar Alterações
+        </button>
       </aside>
 
       {/* Content */}
