@@ -127,8 +127,16 @@ const defaultData: SiteData = {
   },
 };
 
+const loadSavedData = (): SiteData => {
+  try {
+    const saved = localStorage.getItem('woodonwood-site-data');
+    if (saved) return JSON.parse(saved);
+  } catch {}
+  return defaultData;
+};
+
 export const useSiteStore = create<SiteStore>((set) => ({
-  data: defaultData,
+  data: loadSavedData(),
   updateHero: (hero) =>
     set((s) => ({ data: { ...s.data, hero: { ...s.data.hero, ...hero } } })),
   updateAbout: (about) =>

@@ -1,11 +1,13 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, LayoutDashboard, Image, FileText, Folder, Phone } from 'lucide-react';
+import { ArrowLeft, LayoutDashboard, Image, FileText, Folder, Phone, Save } from 'lucide-react';
 import HeroEditor from '@/components/admin/HeroEditor';
 import AboutEditor from '@/components/admin/AboutEditor';
 import PortfolioEditor from '@/components/admin/PortfolioEditor';
 import CategoriesEditor from '@/components/admin/CategoriesEditor';
 import ContactEditor from '@/components/admin/ContactEditor';
+import { useSiteStore } from '@/store/siteStore';
+import { useToast } from '@/hooks/use-toast';
 
 type Tab = 'hero' | 'about' | 'portfolio' | 'categories' | 'contact';
 
@@ -19,6 +21,17 @@ const tabs: { id: Tab; label: string; icon: React.ReactNode }[] = [
 
 const AdminPanel = () => {
   const [activeTab, setActiveTab] = useState<Tab>('hero');
+  const data = useSiteStore((s) => s.data);
+  const { toast } = useToast();
+
+  const handleSave = () => {
+    try {
+      localStorage.setItem('woodonwood-site-data', JSON.stringify(data));
+      toast({ title: 'Alterações guardadas com sucesso!' });
+    } catch {
+      toast({ title: 'Erro ao guardar', variant: 'destructive' });
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background flex">
@@ -49,6 +62,14 @@ const AdminPanel = () => {
             </button>
           ))}
         </nav>
+
+        <button
+          onClick={handleSave}
+          className="mt-auto flex items-center justify-center gap-2 px-4 py-2.5 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:opacity-90 transition-opacity"
+        >
+          <Save size={16} />
+          Salvar Alterações
+        </button>
       </aside>
 
       {/* Content */}
