@@ -182,4 +182,9 @@ export const useSiteStore = create<SiteStore>()(
     set((s) => ({ data: { ...s.data, contact: { ...s.data.contact, ...contact } } })),
   updateNav: (nav) =>
     set((s) => ({ data: { ...s.data, nav: { ...s.data.nav, ...nav } } })),
-}));
+}),
+    {
+      name: 'woodonwood-site-data',
+    }
+  )
+);
