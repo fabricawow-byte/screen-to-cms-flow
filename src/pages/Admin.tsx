@@ -25,12 +25,7 @@ const AdminPanel = () => {
   const { toast } = useToast();
 
   const handleSave = () => {
-    try {
-      localStorage.setItem('woodonwood-site-data', JSON.stringify(data));
-      toast({ title: 'Alterações guardadas com sucesso!' });
-    } catch {
-      toast({ title: 'Erro ao guardar', variant: 'destructive' });
-    }
+    toast({ title: 'Alterações guardadas com sucesso!', description: 'As alterações são salvas automaticamente a cada edição.' });
   };
 
   return (
