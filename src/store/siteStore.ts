@@ -170,7 +170,19 @@ export const useSiteStore = create<SiteStore>()((set, get) => ({
       for (const row of rows) {
         const key = row.section_key as keyof SiteData;
         if (key in current) {
-          (current as any)[key] = row.content;
+          if (key === 'hero') {
+            const dbHero = row.content as any;
+            // Preserve bundled logo image if DB has a non-URL path or "default"
+            if (dbHero?.logo?.image && (dbHero.logo.image === 'default' || dbHero.logo.image.startsWith('/src/'))) {
+              dbHero.logo.image = defaultData.hero.logo.image;
+            }
+            if (dbHero?.backgroundImage === 'default' || dbHero?.backgroundImage?.startsWith('/src/')) {
+              dbHero.backgroundImage = defaultData.hero.backgroundImage;
+            }
+            (current as any)[key] = { ...current.hero, ...dbHero };
+          } else {
+            (current as any)[key] = row.content;
+          }
         }
       }
       set({ data: current, loaded: true });
@@ -186,7 +198,15 @@ export const useSiteStore = create<SiteStore>()((set, get) => ({
   updateHero: (hero) =>
     set((s) => {
       const newHero = { ...s.data.hero, ...hero };
-      saveSectionToDB('hero', newHero);
+      // For DB persistence, replace bundled asset paths with "default" marker
+      let heroForDB = { ...newHero };
+      if (heroForDB.logo?.image === defaultData.hero.logo.image) {
+        heroForDB = { ...heroForDB, logo: { ...heroForDB.logo, image: 'default' } };
+      }
+      if (heroForDB.backgroundImage === defaultData.hero.backgroundImage) {
+        heroForDB = { ...heroForDB, backgroundImage: 'default' };
+      }
+      saveSectionToDB('hero', heroForDB);
       return { data: { ...s.data, hero: newHero } };
     }),
   updateAbout: (about) =>
