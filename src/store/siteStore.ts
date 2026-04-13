@@ -117,8 +117,8 @@ const defaultData: SiteData = {
     title: 'Paixão pelo detalhe, respeito pela matéria-prima.',
     paragraphs: [
       'Somos uma empresa dedicada ao fabrico de mobiliário, vocacionada para acompanhar projetos e dar suporte a quem procure um parceiro para a produção de mobiliário de qualidade.',
-      'Com décadas no ramo do fabrico de móveis, a wood on wood surge da experiência passada de pai para filha, onde a excelência da arte de marceneiro se conjuga ao talento de criar.',
-      'A paixão em produzir e criar soluções para os desafios que nos são propostos, fazem da wood on wood o parceiro que procura para dar corpo ao seu projeto.',
+      'Com décadas no ramo do fabrico de móveis, a Wood on Wood surge da experiência passada de pai para filha, onde a excelência da arte de marceneiro se conjuga ao talento de criar.',
+      'A paixão em produzir e criar soluções para os desafios que nos são propostos, fazem da Wood on Wood o parceiro que procura para dar corpo ao seu projeto.',
     ],
     tagline: 'Como nos definimos, "joinery solutions" é o que fazemos.',
     image: aboutImage,
