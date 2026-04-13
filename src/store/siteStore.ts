@@ -196,7 +196,7 @@ export const useSiteStore = create<SiteStore>()((set, get) => ({
     set((s) => {
       const newHero = { ...s.data.hero, ...hero };
       // For DB persistence, replace bundled asset paths with "default" marker
-      const heroForDB = { ...newHero };
+      let heroForDB = { ...newHero };
       if (heroForDB.logo?.image === defaultData.hero.logo.image) {
         heroForDB = { ...heroForDB, logo: { ...heroForDB.logo, image: 'default' } };
       }
