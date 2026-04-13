@@ -1,12 +1,12 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { ArrowLeft, LayoutDashboard, Image, FileText, Folder, Phone, Save } from 'lucide-react';
+import { Link, Navigate } from 'react-router-dom';
+import { ArrowLeft, LayoutDashboard, Image, FileText, Folder, Phone, Save, LogOut } from 'lucide-react';
 import HeroEditor from '@/components/admin/HeroEditor';
 import AboutEditor from '@/components/admin/AboutEditor';
 import PortfolioEditor from '@/components/admin/PortfolioEditor';
 import CategoriesEditor from '@/components/admin/CategoriesEditor';
 import ContactEditor from '@/components/admin/ContactEditor';
-import { useSiteStore } from '@/store/siteStore';
+import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
 
 type Tab = 'hero' | 'about' | 'portfolio' | 'categories' | 'contact';
@@ -21,16 +21,37 @@ const tabs: { id: Tab; label: string; icon: React.ReactNode }[] = [
 
 const AdminPanel = () => {
   const [activeTab, setActiveTab] = useState<Tab>('hero');
-  const data = useSiteStore((s) => s.data);
+  const { user, loading, isAdmin, signOut } = useAuth();
   const { toast } = useToast();
 
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <p className="text-muted-foreground">A carregar...</p>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
+
+  if (!isAdmin) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center flex-col gap-4">
+        <p className="text-foreground text-lg">Sem permissão de administrador.</p>
+        <p className="text-muted-foreground text-sm">Contacte o administrador para obter acesso.</p>
+        <button onClick={signOut} className="text-primary text-sm hover:underline">Sair</button>
+      </div>
+    );
+  }
+
   const handleSave = () => {
-    toast({ title: 'Alterações guardadas com sucesso!', description: 'As alterações são salvas automaticamente a cada edição.' });
+    toast({ title: 'Alterações guardadas!', description: 'Os dados foram salvos no banco de dados.' });
   };
 
   return (
     <div className="min-h-screen bg-background flex">
-      {/* Sidebar */}
       <aside className="w-64 border-r border-border bg-card p-6 flex flex-col gap-6">
         <div className="flex items-center gap-2 mb-4">
           <Link to="/" className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors text-sm">
@@ -60,14 +81,21 @@ const AdminPanel = () => {
 
         <button
           onClick={handleSave}
-          className="mt-auto flex items-center justify-center gap-2 px-4 py-2.5 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:opacity-90 transition-opacity"
+          className="flex items-center justify-center gap-2 px-4 py-2.5 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:opacity-90 transition-opacity"
         >
           <Save size={16} />
           Salvar Alterações
         </button>
+
+        <button
+          onClick={signOut}
+          className="mt-auto flex items-center justify-center gap-2 px-4 py-2.5 border border-border text-muted-foreground rounded-lg text-sm hover:text-foreground transition-colors"
+        >
+          <LogOut size={16} />
+          Sair
+        </button>
       </aside>
 
-      {/* Content */}
       <main className="flex-1 p-8 overflow-y-auto">
         <div className="max-w-2xl">
           {activeTab === 'hero' && <HeroEditor />}
