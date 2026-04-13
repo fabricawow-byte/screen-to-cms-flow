@@ -4,18 +4,18 @@ import { ArrowLeft, LayoutDashboard, Image, FileText, Folder, Phone, Save, LogOu
 import HeroEditor from '@/components/admin/HeroEditor';
 import AboutEditor from '@/components/admin/AboutEditor';
 import PortfolioEditor from '@/components/admin/PortfolioEditor';
-import CategoriesEditor from '@/components/admin/CategoriesEditor';
+
 import ContactEditor from '@/components/admin/ContactEditor';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
 
-type Tab = 'hero' | 'about' | 'portfolio' | 'categories' | 'contact';
+type Tab = 'hero' | 'about' | 'portfolio' | 'contact';
 
 const tabs: { id: Tab; label: string; icon: React.ReactNode }[] = [
   { id: 'hero', label: 'Hero', icon: <LayoutDashboard size={18} /> },
   { id: 'about', label: 'Sobre', icon: <FileText size={18} /> },
   { id: 'portfolio', label: 'Projetos', icon: <Image size={18} /> },
-  { id: 'categories', label: 'Categorias', icon: <Folder size={18} /> },
+  
   { id: 'contact', label: 'Contacto', icon: <Phone size={18} /> },
 ];
 
@@ -101,7 +101,7 @@ const AdminPanel = () => {
           {activeTab === 'hero' && <HeroEditor />}
           {activeTab === 'about' && <AboutEditor />}
           {activeTab === 'portfolio' && <PortfolioEditor />}
-          {activeTab === 'categories' && <CategoriesEditor />}
+          
           {activeTab === 'contact' && <ContactEditor />}
         </div>
       </main>
