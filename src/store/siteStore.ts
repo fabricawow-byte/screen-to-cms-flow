@@ -176,6 +176,9 @@ export const useSiteStore = create<SiteStore>()((set, get) => ({
             if (dbHero?.logo?.image && (dbHero.logo.image === 'default' || dbHero.logo.image.startsWith('/src/'))) {
               dbHero.logo.image = defaultData.hero.logo.image;
             }
+            if (dbHero?.backgroundImage === 'default' || dbHero?.backgroundImage?.startsWith('/src/')) {
+              dbHero.backgroundImage = defaultData.hero.backgroundImage;
+            }
             (current as any)[key] = { ...current.hero, ...dbHero };
           } else {
             (current as any)[key] = row.content;
