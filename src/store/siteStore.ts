@@ -1,17 +1,26 @@
 import { create } from 'zustand';
 import { supabase } from '@/integrations/supabase/client';
 import heroBg from '@/assets/hero-bg.jpg';
+import logoImg from '@/assets/logo.png';
 import aboutImage from '@/assets/about-image.jpg';
 import portfolio1 from '@/assets/portfolio-1.jpg';
 import portfolio2 from '@/assets/portfolio-2.jpg';
 import category1 from '@/assets/category-1.jpg';
 import category2 from '@/assets/category-2.jpg';
 
+export interface LogoSettings {
+  image: string;
+  x: number; // percentage from left
+  y: number; // percentage from top
+  size: number; // percentage width
+}
+
 export interface HeroData {
   title: string;
   subtitle: string;
   buttonText: string;
   backgroundImage: string;
+  logo: LogoSettings;
 }
 
 export interface AboutData {
@@ -96,6 +105,12 @@ const defaultData: SiteData = {
     subtitle: 'Marcenaria & Design',
     buttonText: 'Ver Projetos',
     backgroundImage: heroBg,
+    logo: {
+      image: logoImg,
+      x: 50,
+      y: 30,
+      size: 15,
+    },
   },
   about: {
     label: 'SOBRE NÓS',
