@@ -3,6 +3,7 @@ import { ChevronRight } from 'lucide-react';
 
 const Hero = () => {
   const { hero } = useSiteStore((s) => s.data);
+  const logo = hero.logo;
 
   return (
     <section
@@ -15,6 +16,21 @@ const Hero = () => {
         style={{ backgroundImage: `url(${hero.backgroundImage})` }}
       />
       <div className="absolute inset-0 bg-background/30" />
+
+      {/* Logo overlay */}
+      {logo?.image && (
+        <img
+          src={logo.image}
+          alt="Logo"
+          className="absolute z-10 pointer-events-none"
+          style={{
+            left: `${logo.x}%`,
+            top: `${logo.y}%`,
+            width: `${logo.size}%`,
+            transform: 'translate(-50%, -50%)',
+          }}
+        />
+      )}
 
       {/* Content */}
       <div className="relative z-10 flex flex-col items-center text-center gap-6">
