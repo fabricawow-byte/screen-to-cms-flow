@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { supabase } from '@/integrations/supabase/client';
 import heroBg from '@/assets/hero-bg.jpg';
 import aboutImage from '@/assets/about-image.jpg';
 import portfolio1 from '@/assets/portfolio-1.jpg';
@@ -66,6 +66,8 @@ export interface SiteData {
 
 interface SiteStore {
   data: SiteData;
+  loaded: boolean;
+  loadFromDB: () => Promise<void>;
   updateHero: (hero: Partial<HeroData>) => void;
   updateAbout: (about: Partial<AboutData>) => void;
   updatePortfolio: (portfolio: Partial<PortfolioData>) => void;
@@ -77,6 +79,7 @@ interface SiteStore {
   removeCategory: (id: string) => void;
   updateContact: (contact: Partial<ContactData>) => void;
   updateNav: (nav: Partial<NavData>) => void;
+  saveSection: (key: string, content: any) => Promise<void>;
 }
 
 const defaultData: SiteData = {
@@ -128,63 +131,113 @@ const defaultData: SiteData = {
   },
 };
 
-export const useSiteStore = create<SiteStore>()(
-  persist(
-    (set) => ({
-      data: defaultData,
-  updateHero: (hero) =>
-    set((s) => ({ data: { ...s.data, hero: { ...s.data.hero, ...hero } } })),
-  updateAbout: (about) =>
-    set((s) => ({ data: { ...s.data, about: { ...s.data.about, ...about } } })),
-  updatePortfolio: (portfolio) =>
-    set((s) => ({ data: { ...s.data, portfolio: { ...s.data.portfolio, ...portfolio } } })),
-  updatePortfolioItem: (id, item) =>
-    set((s) => ({
-      data: {
-        ...s.data,
-        portfolio: {
-          ...s.data.portfolio,
-          items: s.data.portfolio.items.map((i) => (i.id === id ? { ...i, ...item } : i)),
-        },
-      },
-    })),
-  addPortfolioItem: (item) =>
-    set((s) => ({
-      data: {
-        ...s.data,
-        portfolio: { ...s.data.portfolio, items: [...s.data.portfolio.items, item] },
-      },
-    })),
-  removePortfolioItem: (id) =>
-    set((s) => ({
-      data: {
-        ...s.data,
-        portfolio: {
-          ...s.data.portfolio,
-          items: s.data.portfolio.items.filter((i) => i.id !== id),
-        },
-      },
-    })),
-  updateCategory: (id, category) =>
-    set((s) => ({
-      data: {
-        ...s.data,
-        categories: s.data.categories.map((c) => (c.id === id ? { ...c, ...category } : c)),
-      },
-    })),
-  addCategory: (category) =>
-    set((s) => ({ data: { ...s.data, categories: [...s.data.categories, category] } })),
-  removeCategory: (id) =>
-    set((s) => ({
-      data: { ...s.data, categories: s.data.categories.filter((c) => c.id !== id) },
-    })),
-  updateContact: (contact) =>
-    set((s) => ({ data: { ...s.data, contact: { ...s.data.contact, ...contact } } })),
-  updateNav: (nav) =>
-    set((s) => ({ data: { ...s.data, nav: { ...s.data.nav, ...nav } } })),
-}),
-    {
-      name: 'woodonwood-site-data',
+const saveSectionToDB = async (key: string, content: any) => {
+  const { error } = await supabase
+    .from('site_content')
+    .upsert(
+      { section_key: key, content, updated_at: new Date().toISOString() },
+      { onConflict: 'section_key' }
+    );
+  if (error) console.error('Error saving section', key, error);
+};
+
+export const useSiteStore = create<SiteStore>()((set, get) => ({
+  data: defaultData,
+  loaded: false,
+
+  loadFromDB: async () => {
+    const { data: rows } = await supabase
+      .from('site_content')
+      .select('section_key, content');
+
+    if (rows && rows.length > 0) {
+      const current = { ...get().data };
+      for (const row of rows) {
+        const key = row.section_key as keyof SiteData;
+        if (key in current) {
+          (current as any)[key] = row.content;
+        }
+      }
+      set({ data: current, loaded: true });
+    } else {
+      set({ loaded: true });
     }
-  )
-);
+  },
+
+  saveSection: async (key: string, content: any) => {
+    await saveSectionToDB(key, content);
+  },
+
+  updateHero: (hero) =>
+    set((s) => {
+      const newHero = { ...s.data.hero, ...hero };
+      saveSectionToDB('hero', newHero);
+      return { data: { ...s.data, hero: newHero } };
+    }),
+  updateAbout: (about) =>
+    set((s) => {
+      const newAbout = { ...s.data.about, ...about };
+      saveSectionToDB('about', newAbout);
+      return { data: { ...s.data, about: newAbout } };
+    }),
+  updatePortfolio: (portfolio) =>
+    set((s) => {
+      const newPortfolio = { ...s.data.portfolio, ...portfolio };
+      saveSectionToDB('portfolio', newPortfolio);
+      return { data: { ...s.data, portfolio: newPortfolio } };
+    }),
+  updatePortfolioItem: (id, item) =>
+    set((s) => {
+      const newPortfolio = {
+        ...s.data.portfolio,
+        items: s.data.portfolio.items.map((i) => (i.id === id ? { ...i, ...item } : i)),
+      };
+      saveSectionToDB('portfolio', newPortfolio);
+      return { data: { ...s.data, portfolio: newPortfolio } };
+    }),
+  addPortfolioItem: (item) =>
+    set((s) => {
+      const newPortfolio = { ...s.data.portfolio, items: [...s.data.portfolio.items, item] };
+      saveSectionToDB('portfolio', newPortfolio);
+      return { data: { ...s.data, portfolio: newPortfolio } };
+    }),
+  removePortfolioItem: (id) =>
+    set((s) => {
+      const newPortfolio = {
+        ...s.data.portfolio,
+        items: s.data.portfolio.items.filter((i) => i.id !== id),
+      };
+      saveSectionToDB('portfolio', newPortfolio);
+      return { data: { ...s.data, portfolio: newPortfolio } };
+    }),
+  updateCategory: (id, category) =>
+    set((s) => {
+      const newCats = s.data.categories.map((c) => (c.id === id ? { ...c, ...category } : c));
+      saveSectionToDB('categories', newCats);
+      return { data: { ...s.data, categories: newCats } };
+    }),
+  addCategory: (category) =>
+    set((s) => {
+      const newCats = [...s.data.categories, category];
+      saveSectionToDB('categories', newCats);
+      return { data: { ...s.data, categories: newCats } };
+    }),
+  removeCategory: (id) =>
+    set((s) => {
+      const newCats = s.data.categories.filter((c) => c.id !== id);
+      saveSectionToDB('categories', newCats);
+      return { data: { ...s.data, categories: newCats } };
+    }),
+  updateContact: (contact) =>
+    set((s) => {
+      const newContact = { ...s.data.contact, ...contact };
+      saveSectionToDB('contact', newContact);
+      return { data: { ...s.data, contact: newContact } };
+    }),
+  updateNav: (nav) =>
+    set((s) => {
+      const newNav = { ...s.data.nav, ...nav };
+      saveSectionToDB('nav', newNav);
+      return { data: { ...s.data, nav: newNav } };
+    }),
+}));
