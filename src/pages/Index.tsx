@@ -26,6 +26,11 @@ const Index = () => {
       <Portfolio />
       
       <Contact />
+      <footer className="py-4 text-center">
+        <span className="text-muted-foreground/40 font-body text-[9px] tracking-wider">
+          Desenvolvido por RBMSolucoes
+        </span>
+      </footer>
       <WhatsAppButton />
     </div>
   );
