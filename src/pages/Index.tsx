@@ -3,7 +3,7 @@ import Navbar from '@/components/Navbar';
 import Hero from '@/components/Hero';
 import About from '@/components/About';
 import Portfolio from '@/components/Portfolio';
-import Categories from '@/components/Categories';
+
 import Contact from '@/components/Contact';
 import WhatsAppButton from '@/components/WhatsAppButton';
 import { useSiteStore } from '@/store/siteStore';
@@ -24,7 +24,7 @@ const Index = () => {
       <Hero />
       <About />
       <Portfolio />
-      <Categories />
+      
       <Contact />
       <WhatsAppButton />
     </div>
