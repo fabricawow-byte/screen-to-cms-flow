@@ -170,7 +170,16 @@ export const useSiteStore = create<SiteStore>()((set, get) => ({
       for (const row of rows) {
         const key = row.section_key as keyof SiteData;
         if (key in current) {
-          (current as any)[key] = row.content;
+          if (key === 'hero') {
+            const dbHero = row.content as any;
+            // Preserve bundled logo image if DB has a non-URL path or "default"
+            if (dbHero?.logo?.image && (dbHero.logo.image === 'default' || dbHero.logo.image.startsWith('/src/'))) {
+              dbHero.logo.image = defaultData.hero.logo.image;
+            }
+            (current as any)[key] = { ...current.hero, ...dbHero };
+          } else {
+            (current as any)[key] = row.content;
+          }
         }
       }
       set({ data: current, loaded: true });
