@@ -195,7 +195,15 @@ export const useSiteStore = create<SiteStore>()((set, get) => ({
   updateHero: (hero) =>
     set((s) => {
       const newHero = { ...s.data.hero, ...hero };
-      saveSectionToDB('hero', newHero);
+      // For DB persistence, replace bundled asset paths with "default" marker
+      const heroForDB = { ...newHero };
+      if (heroForDB.logo?.image === defaultData.hero.logo.image) {
+        heroForDB = { ...heroForDB, logo: { ...heroForDB.logo, image: 'default' } };
+      }
+      if (heroForDB.backgroundImage === defaultData.hero.backgroundImage) {
+        heroForDB = { ...heroForDB, backgroundImage: 'default' };
+      }
+      saveSectionToDB('hero', heroForDB);
       return { data: { ...s.data, hero: newHero } };
     }),
   updateAbout: (about) =>
