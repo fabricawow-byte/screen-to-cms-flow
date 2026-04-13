@@ -32,17 +32,24 @@ const Hero = () => {
         />
       )}
 
-      {/* Content */}
-      <div className="relative z-10 flex flex-col items-center text-center gap-6">
-        <h1 className="font-heading text-foreground text-5xl md:text-7xl lg:text-8xl font-light tracking-wide">
+      {/* Content — positioned below the logo */}
+      <div
+        className="absolute z-10 flex flex-col items-center text-center gap-4"
+        style={{
+          top: `${(logo?.y ?? 30) + (logo?.size ?? 15) / 1.5}%`,
+          left: '50%',
+          transform: 'translateX(-50%)',
+        }}
+      >
+        <h1 className="font-heading text-foreground text-4xl md:text-6xl lg:text-7xl font-light tracking-wide">
           {hero.title}
         </h1>
-        <p className="text-hero-subtitle font-body text-sm md:text-base tracking-[0.15em]">
+        <p className="text-hero-subtitle font-body text-[10px] md:text-xs tracking-[0.15em]">
           {hero.subtitle}
         </p>
         <a
           href="#projetos"
-          className="mt-8 flex items-center gap-3 bg-foreground text-background px-8 py-4 rounded-full font-body text-sm tracking-wide hover:opacity-90 transition-opacity"
+          className="mt-6 flex items-center gap-3 bg-foreground text-background px-8 py-4 rounded-full font-body text-sm tracking-wide hover:opacity-90 transition-opacity"
         >
           {hero.buttonText}
           <ChevronRight size={18} />
