@@ -3,6 +3,7 @@ import { ChevronRight } from 'lucide-react';
 
 const Hero = () => {
   const { hero } = useSiteStore((s) => s.data);
+  const loaded = useSiteStore((s) => s.loaded);
   const logo = hero.logo;
 
   return (
