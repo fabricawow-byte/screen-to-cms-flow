@@ -3,7 +3,16 @@ import { ChevronRight } from 'lucide-react';
 
 const Hero = () => {
   const { hero } = useSiteStore((s) => s.data);
+  const loaded = useSiteStore((s) => s.loaded);
   const logo = hero.logo;
+
+  if (!loaded) {
+    return (
+      <section id="inicio" className="relative h-screen w-full flex items-center justify-center bg-background">
+        <div className="w-px h-16 bg-foreground/20 animate-pulse" />
+      </section>
+    );
+  }
 
   return (
     <section
