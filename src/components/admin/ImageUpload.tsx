@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react';
-import { uploadToCloudinary, isCloudinaryConfigured } from '@/services/cloudinary';
+import { supabase } from '@/integrations/supabase/client';
 
 interface ImageUploadProps {
   currentImage: string;
@@ -7,33 +7,42 @@ interface ImageUploadProps {
   label?: string;
 }
 
+const BUCKET = 'site-images';
+
 const ImageUpload = ({ currentImage, onImageChange, label }: ImageUploadProps) => {
   const [preview, setPreview] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
 
   const handleFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
+    setError(null);
     const localUrl = URL.createObjectURL(file);
     setPreview(localUrl);
+    setUploading(true);
 
-    if (isCloudinaryConfigured()) {
-      setUploading(true);
-      try {
-        const url = await uploadToCloudinary(file);
-        onImageChange(url);
-        setPreview(null);
-      } catch {
-        console.error('Upload falhou, usando imagem local');
-        onImageChange(localUrl);
-      } finally {
-        setUploading(false);
-      }
-    } else {
-      onImageChange(localUrl);
+    try {
+      const ext = file.name.split('.').pop() || 'jpg';
+      const path = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from(BUCKET)
+        .upload(path, file, { cacheControl: '3600', upsert: false, contentType: file.type });
+
+      if (uploadError) throw uploadError;
+
+      const { data } = supabase.storage.from(BUCKET).getPublicUrl(path);
+      onImageChange(data.publicUrl);
       setPreview(null);
+    } catch (err) {
+      console.error('Upload falhou', err);
+      setError('Falha no upload. Verifique permissões.');
+    } finally {
+      setUploading(false);
+      if (fileRef.current) fileRef.current.value = '';
     }
   };
 
@@ -55,9 +64,7 @@ const ImageUpload = ({ currentImage, onImageChange, label }: ImageUploadProps) =
           >
             {uploading ? 'A enviar...' : 'Trocar imagem'}
           </button>
-          {!isCloudinaryConfigured() && (
-            <span className="text-xs text-muted-foreground">Cloudinary não configurado – usando local</span>
-          )}
+          {error && <span className="text-xs text-destructive">{error}</span>}
         </div>
       </div>
       <input ref={fileRef} type="file" accept="image/*" onChange={handleFile} className="hidden" />
