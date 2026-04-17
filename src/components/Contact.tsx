@@ -8,7 +8,9 @@ const Contact = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Form submitted:', form);
+    // Submission handler placeholder — do not log PII to the console.
+    // TODO: integrate with a backend (edge function / email provider) to deliver messages.
+    setForm({ name: '', email: '', message: '' });
   };
 
   return (
